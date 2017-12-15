@@ -13,7 +13,8 @@ import {Diagnostic} from '@ionic-native/diagnostic';
     ]
 })
 export class HomePage {
-
+    Latitude:number;
+    Longitude:number;
     constructor(public navCtrl: NavController,private diagnostic: Diagnostic, private geolocation: Geolocation) {
 
     }
@@ -45,6 +46,21 @@ export class HomePage {
     }
 
     stop() {
+        var watchID = navigator.geolocation.watchPosition(onSuccess, onError, { enableHighAccuracy: true });
 
+
+        var onSuccess = function (position) {
+
+
+            alert(position.coords.longitude + ' ' + position.coords.latitude);
+
+        };
+
+     var    onError =function(error) {
+            console.log('code: ' + error.code + '\n' +
+                'message: ' + error.message + '\n');
+        };
+
+        navigator.geolocation.clearWatch(watchID);
     }
 }
