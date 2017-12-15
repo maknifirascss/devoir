@@ -9,58 +9,74 @@ import {Diagnostic} from '@ionic-native/diagnostic';
 })
 @NgModule({
     providers: [
-        Geolocation
+        Geolocation,Diagnostic
     ]
 })
 export class HomePage {
     Latitude:number;
     Longitude:number;
+    subscription:any=null;
     constructor(public navCtrl: NavController,private diagnostic: Diagnostic, private geolocation: Geolocation) {
 
     }
 
 
     search() {
+    if(this.subscription!==null){
+    alert("prob");
+    this.subscription.unsubscribe();
+this.subscription=null;
+    }else{
         alert("ok");
         try {
             this.diagnostic.isLocationEnabled().then(
                 (isAvailable) => {
                     if (!isAvailable) {
-                        alert("0)")
+                        alert("0");
                     } else {
+                        alert("1");
 
-                        const subscription = this.geolocation.watchPosition()
+                        this.subscription = this.geolocation.watchPosition()
                         //   .filter((p) => p.coords !== undefined) //Filter Out Errors
                             .subscribe(position => {
                                 alert(position.coords.longitude + ' ' + position.coords.latitude);
                             });
 
 // To stop notifications
-                        subscription.unsubscribe();
+                    
                     }  }).catch((e) => {
                 alert(e);
             });
         } catch (e) {
 
         }
+        }
     }
 
     stop() {
-        var watchID = navigator.geolocation.watchPosition(onSuccess, onError, { enableHighAccuracy: true });
+    alert('no');
+
+this.subscription.unsubscribe();
+this.subscription=null;
+
+       /* var watchID = navigator.geolocation.watchPosition(this.onSuccess, this.onError, { enableHighAccuracy: true });
 
 
-        var onSuccess = function (position) {
+      
+
+        navigator.geolocation.clearWatch(watchID);
+        */
+    }
+
+       onSuccess (position) {
 
 
             alert(position.coords.longitude + ' ' + position.coords.latitude);
 
         };
 
-     var    onError =function(error) {
+      onError (error) {
             console.log('code: ' + error.code + '\n' +
                 'message: ' + error.message + '\n');
         };
-
-        navigator.geolocation.clearWatch(watchID);
-    }
 }
