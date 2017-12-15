@@ -1,10 +1,11 @@
 import {Component, NgModule} from '@angular/core';
 import {NavController} from 'ionic-angular';
 import {Geolocation} from '@ionic-native/geolocation';
-
+import {Diagnostic} from '@ionic-native/diagnostic';
 @Component({
     selector: 'page-home',
     templateUrl: 'home.html'
+
 })
 @NgModule({
     providers: [
@@ -13,21 +14,34 @@ import {Geolocation} from '@ionic-native/geolocation';
 })
 export class HomePage {
 
-    constructor(public navCtrl: NavController, private geolocation: Geolocation) {
+    constructor(public navCtrl: NavController,private diagnostic: Diagnostic, private geolocation: Geolocation) {
 
     }
 
 
     search() {
         alert("ok");
-        const subscription = this.geolocation.watchPosition()
-        //   .filter((p) => p.coords !== undefined) //Filter Out Errors
-            .subscribe(position => {
-                alert(position.coords.longitude + ' ' + position.coords.latitude);
-            });
+        try {
+            this.diagnostic.isLocationEnabled().then(
+                (isAvailable) => {
+                    if (!isAvailable) {
+                        alert("0)")
+                    } else {
+
+                        const subscription = this.geolocation.watchPosition()
+                        //   .filter((p) => p.coords !== undefined) //Filter Out Errors
+                            .subscribe(position => {
+                                alert(position.coords.longitude + ' ' + position.coords.latitude);
+                            });
 
 // To stop notifications
-        subscription.unsubscribe();
+                        subscription.unsubscribe();
+                    }  }).catch((e) => {
+                alert(e);
+            });
+        } catch (e) {
+
+        }
     }
 
     stop() {
